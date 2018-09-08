@@ -1,0 +1,42 @@
+:root {
+  --iax-background: #FF6C09;
+  --iax-color: #FFF;
+}
+
+.iaextractor-webx-button>span {
+  color: var(--iax-background);
+}
+.iaextractor-webx-button:before {
+  background-image: url('chrome-extension://__MSG_@@extension_id__/data/inject/download.svg') !important;
+  background-size: 16px 16px !important;
+  background-position: 0 !important;
+}
+@-moz-document url-prefix() {
+  .iaextractor-webx-button:before {
+    background-image: url('moz-extension://__MSG_@@extension_id__/data/inject/download.svg') !important;
+  }
+}
+.iaextractor-new-button yt-icon {
+  background-image: url('chrome-extension://__MSG_@@extension_id__/data/inject/download.svg') !important;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 16px 16px !important;
+  cursor: pointer;
+}
+@-moz-document url-prefix() {
+  .iaextractor-webx-button:before {
+    background-image: url('moz-extension://__MSG_@@extension_id__/data/inject/download.svg');
+  }
+}
+
+.iaextractor-webx-iframe {
+  position: relative;
+  background: transparent;
+  border: none;
+  z-index: 100;
+  overflow: hidden;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+}
+
