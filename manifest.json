@@ -2,8 +2,8 @@
   "name": "YouTube Video and Audio Downloader (Dev Edt.)",
   "short_name": "iaextractor",
   "description": "__MSG_appDesc__",
-  "author": "Bruno Hopsin",
-  "version": "0.7.5",
+  "author": "Feller",
+  "version": "0.8.0",
   "manifest_version": 2,
   "default_locale": "en",
   "permissions": [
@@ -13,9 +13,7 @@
     "downloads",
     "notifications",
     "*://www.youtube.com/*",
-    "*://*.googlevideo.com/*",
-    "https://api.github.com/repos/andy-portmen/native-client/releases/latest",
-    "https://api.github.com/repos/inbasic/ffmpeg/releases/latest"
+    "*://*.googlevideo.com/*"
   ],
   "background": {
     "persistent": false,
@@ -64,6 +62,10 @@
     "/data/inject/download.svg",
     "/data/inject/panel/index.html"
   ],
+  "options_ui": {
+    "page": "data/options/index.html",
+    "chrome_style": true
+  },
   "applications": {
     "gecko": {
       "id": "{f73df109-8fb4-453e-8373-f59e61ca4da3}",

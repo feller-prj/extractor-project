@@ -58,7 +58,8 @@ input:checked ~ label {
   background-image: url('checked.svg');
 }
 img {
-  max-width: 12vw;
+  max-width: 32px;
+  max-height: 32px;
 }
 
 [data-cmd="quick-download"] {
@@ -117,9 +118,38 @@ body[data-youtube=false] [data-cmd=display-panel],
 [pack=center] {
   justify-content: center;
 }
+[pack=end] {
+  justify-content: flex-end;
+}
 [align=center] {
   align-items: center;
 }
 [data-cmd]:active {
   opacity: 0.7;
+}
+
+[data-cmd="quick-download"],
+[data-cmd="display-panel"],
+[data-cmd="open-options"],
+[data-cmd="open-youtube"],
+[data-cmd="open-converter"] {
+  background-position: top 10px center;
+  background-repeat: no-repeat;
+}
+[data-cmd="quick-download"],
+[data-cmd="open-youtube"] {
+  background-size: 32px;
+  background-image: url('download.svg');
+}
+[data-cmd="open-converter"] {
+  background-size: 32px;
+  background-image: url('convert.svg');
+}
+[data-cmd="open-options"] {
+  background-size: 32px;
+  background-image: url('settings.svg');
+}
+[data-cmd="display-panel"] {
+  background-size: 32px;
+  background-image: url('list.svg');
 }

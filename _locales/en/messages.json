@@ -170,22 +170,22 @@
   "pp_8": {
     "message": "Quality:"
   },
-  "pp_21": {
+  "pp_81": {
     "message": "Highest"
   },
-  "pp_22": {
+  "pp_82": {
     "message": "HD1080p"
   },
-  "pp_23": {
+  "pp_83": {
     "message": "HD720p"
   },
-  "pp_24": {
+  "pp_84": {
     "message": "High"
   },
-  "pp_25": {
+  "pp_85": {
     "message": "Medium"
   },
-  "pp_26": {
+  "pp_86": {
     "message": "Small"
   }
 }

@@ -1,18 +1,16 @@
 'use strict';
 
-var id;
-
 document.addEventListener('iaextractor', e => {
   if (e.detail.id) {
     // console.error('ID', e.detail);
-    id = e.detail.id;
+    window.id = e.detail.id;
   }
 });
 
 // Finding id
-function findID () {
+function findID() {
   const url = document.location.href;
-  const tmp = /v\=([^\=\&]*)|embed\/([^\=\&]*)/.exec(url);
+  const tmp = /v=([^=&]*)|embed\/([^=&]*)/.exec(url);
   if (tmp && tmp.length) {
     document.dispatchEvent(new CustomEvent('iaextractor', {
       detail: {

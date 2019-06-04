@@ -4,67 +4,67 @@
 var youtube = {};
 
 /* Converting video tag to video codec information */
-youtube.formatDictionary = (function () {
+youtube.formatDictionary = (function() {
   const KNOWN = {
-    5:   ['flv',  '240',  'mp3', 64,   null],
-    6:   ['flv',  '270',  'mp3', 64,   null],
-    13:  ['3gp',  'N/A',  'aac', null, null],
-    17:  ['3gp',  '144',  'aac', 24,   null],
-    18:  ['mp4',  '360',  'aac', 96,   null],
-    22:  ['mp4',  '720',  'aac', 192,  null],
-    34:  ['flv',  '360',  'aac', 128,  null],
-    35:  ['flv',  '280',  'aac', 128,  null],
-    36:  ['3gp',  '240',  'aac', 38,   null],
-    37:  ['mp4',  '1080', 'aac', 192,  null],
-    38:  ['mp4',  '3072', 'aac', 192,  null],
-    43:  ['webm', '360',  'ogg', 128,  null],
-    44:  ['webm', '480',  'ogg', 128,  null],
-    45:  ['webm', '720',  'ogg', 192,  null],
-    46:  ['webm', '1080', 'ogg', 192,  null],
-    83:  ['mp4',  '240',  'aac', 96,   null],
-    82:  ['mp4',  '360',  'aac', 96,   null],
-    59:  ['mp4',  '480',  'aac', 128,  null],
-    78:  ['mp4',  '480',  'aac', 128,  null],
-    85:  ['mp4',  '520',  'aac', 152,  null],
-    84:  ['mp4',  '720',  'aac', 192,  null],
-    100: ['webm', '360',  'ogg', 128,  null],
-    101: ['webm', '360',  'ogg', 192,  null],
-    102: ['webm', '720',  'ogg', 192,  null],
-    120: ['flv',  '720',  'aac', 128,  null],
-    139: ['m4a',  '48',   'aac', 38,   'a'], //Audio-only
-    140: ['m4a',  '128',  'aac', 128,  'a'], //Audio-only
-    141: ['m4a',  '256',  'aac', 256,  'a'], //Audio-only
-    171: ['webm', '128',  'ogg', 128,  'a'], //Audio-only
-    172: ['webm', '256',  'ogg', 192,  'a'], //Audio-only
-    249: ['webm', '48',   'opus', 50,  'a'], //Audio-only
-    250: ['webm', '48',   'opus', 70,  'a'], //Audio-only
-    251: ['webm', '128',  'opus', 160, 'a'], //Audio-only
-    160: ['mp4',  '144',  null,  null, 'v'], //Video-only
-    133: ['mp4',  '240',  null,  null, 'v'], //Video-only
-    134: ['mp4',  '360',  null,  null, 'v'], //Video-only
-    135: ['mp4',  '480',  null,  null, 'v'], //Video-only
-    298: ['mp4',  '720',  null,  null, 'v'], //Video-only (60fps)
-    136: ['mp4',  '720',  null,  null, 'v'], //Video-only
-    299: ['mp4',  '1080', null,  null, 'v'], //Video-only (60fps)
-    137: ['mp4',  '1080', null,  null, 'v'], //Video-only
-    138: ['mp4',  '2160', null,  null, 'v'], //Video-only
-    266: ['mp4',  '2160', null,  null, 'v'], //Video-only
-    264: ['mp4',  '1440', null,  null, 'v'], //Video-only
-    278: ['webm', '144',  null,  null, 'v'], //Video-only
-    242: ['webm', '240',  null,  null, 'v'], //Video-only
-    243: ['webm', '360',  null,  null, 'v'], //Video-only
-    244: ['webm', '480',  null,  null, 'v'], //Video-only
-    245: ['webm', '480',  null,  null, 'v'], //Video-only
-    246: ['webm', '480',  null,  null, 'v'], //Video-only
-    302: ['webm', '720',  null,  null, 'v'], //Video-only (60fps)
-    247: ['webm', '720',  null,  null, 'v'], //Video-only
-    303: ['webm', '1080', null,  null, 'v'], //Video-only (60fps)
-    248: ['webm', '1080', null,  null, 'v'], //Video-only
-    313: ['webm', '2160', null,  null, 'v'], //Video-only
-    272: ['webm', '2160', null,  null, 'v'], //Video-only
-    271: ['webm', '1440', null,  null, 'v'], //Video-only
-    308: ['webm', '1440', null,  null, 'v'], //Video-only (60fps)
-    315: ['webm', '2160', null,  null, 'v'], //Video-only (60fps)
+    5: ['flv', '240', 'mp3', 64, null],
+    6: ['flv', '270', 'mp3', 64, null],
+    13: ['3gp', 'N/A', 'aac', null, null],
+    17: ['3gp', '144', 'aac', 24, null],
+    18: ['mp4', '360', 'aac', 96, null],
+    22: ['mp4', '720', 'aac', 192, null],
+    34: ['flv', '360', 'aac', 128, null],
+    35: ['flv', '280', 'aac', 128, null],
+    36: ['3gp', '240', 'aac', 38, null],
+    37: ['mp4', '1080', 'aac', 192, null],
+    38: ['mp4', '3072', 'aac', 192, null],
+    43: ['webm', '360', 'ogg', 128, null],
+    44: ['webm', '480', 'ogg', 128, null],
+    45: ['webm', '720', 'ogg', 192, null],
+    46: ['webm', '1080', 'ogg', 192, null],
+    83: ['mp4', '240', 'aac', 96, null],
+    82: ['mp4', '360', 'aac', 96, null],
+    59: ['mp4', '480', 'aac', 128, null],
+    78: ['mp4', '480', 'aac', 128, null],
+    85: ['mp4', '520', 'aac', 152, null],
+    84: ['mp4', '720', 'aac', 192, null],
+    100: ['webm', '360', 'ogg', 128, null],
+    101: ['webm', '360', 'ogg', 192, null],
+    102: ['webm', '720', 'ogg', 192, null],
+    120: ['flv', '720', 'aac', 128, null],
+    139: ['m4a', '48', 'aac', 38, 'a'], // Audio-only
+    140: ['m4a', '128', 'aac', 128, 'a'], // Audio-only
+    141: ['m4a', '256', 'aac', 256, 'a'], // Audio-only
+    171: ['webm', '128', 'ogg', 128, 'a'], // Audio-only
+    172: ['webm', '256', 'ogg', 192, 'a'], // Audio-only
+    249: ['webm', '48', 'opus', 50, 'a'], // Audio-only
+    250: ['webm', '48', 'opus', 70, 'a'], // Audio-only
+    251: ['webm', '128', 'opus', 160, 'a'], // Audio-only
+    160: ['mp4', '144', null, null, 'v'], // Video-only
+    133: ['mp4', '240', null, null, 'v'], // Video-only
+    134: ['mp4', '360', null, null, 'v'], // Video-only
+    135: ['mp4', '480', null, null, 'v'], // Video-only
+    298: ['mp4', '720', null, null, 'v'], // Video-only (60fps)
+    136: ['mp4', '720', null, null, 'v'], // Video-only
+    299: ['mp4', '1080', null, null, 'v'], // Video-only (60fps)
+    137: ['mp4', '1080', null, null, 'v'], // Video-only
+    138: ['mp4', '2160', null, null, 'v'], // Video-only
+    266: ['mp4', '2160', null, null, 'v'], // Video-only
+    264: ['mp4', '1440', null, null, 'v'], // Video-only
+    278: ['webm', '144', null, null, 'v'], // Video-only
+    242: ['webm', '240', null, null, 'v'], // Video-only
+    243: ['webm', '360', null, null, 'v'], // Video-only
+    244: ['webm', '480', null, null, 'v'], // Video-only
+    245: ['webm', '480', null, null, 'v'], // Video-only
+    246: ['webm', '480', null, null, 'v'], // Video-only
+    302: ['webm', '720', null, null, 'v'], // Video-only (60fps)
+    247: ['webm', '720', null, null, 'v'], // Video-only
+    303: ['webm', '1080', null, null, 'v'], // Video-only (60fps)
+    248: ['webm', '1080', null, null, 'v'], // Video-only
+    313: ['webm', '2160', null, null, 'v'], // Video-only
+    272: ['webm', '2160', null, null, 'v'], // Video-only
+    271: ['webm', '1440', null, null, 'v'], // Video-only
+    308: ['webm', '1440', null, null, 'v'], // Video-only (60fps)
+    315: ['webm', '2160', null, null, 'v'] // Video-only (60fps)
   };
   return function(obj) {
     var itag = obj.itag;
@@ -74,11 +74,11 @@ youtube.formatDictionary = (function () {
     // get resolution from YouTube server
     var res = obj.size ? /\d+x(\d+)/.exec(obj.size) : null;
     var tmp = {
-      container:     KNOWN[itag][0],
-      resolution:    (res && res.length ? res[1] : KNOWN[itag][1]) + 'p',
+      container: KNOWN[itag][0],
+      resolution: (res && res.length ? res[1] : KNOWN[itag][1]) + 'p',
       audioEncoding: KNOWN[itag][2],
-      audioBitrate:  KNOWN[itag][3],
-      dash:  KNOWN[itag][4],
+      audioBitrate: KNOWN[itag][3],
+      dash: KNOWN[itag][4]
     };
     if (tmp.dash === 'a') {
       tmp.quality = 'Audio-only';
@@ -128,7 +128,7 @@ youtube.getFormats = videoID => {
   // console.log('getFormats', videoID);
   return youtube.fetch('https://www.youtube.com/watch?v=' + videoID).then(content => {
     const url_encoded_fmt_stream_map = /url_encoded_fmt_stream_map":\s*"([^"]*)/.exec(content);
-    const adaptive_fmts = /adaptive_fmts"\:\s*"([^"]*)/.exec(content);
+    const adaptive_fmts = /adaptive_fmts":\s*"([^"]*)/.exec(content);
     const dashmpd = /"dashmpd":\s*"([^"]+)"/.exec(content);
     const player = /"js":\s*"([^"]+)"/.exec(content);
     const published_date = /datePublished.*content="([^"]+)/.exec(content);
@@ -155,7 +155,7 @@ youtube.getExtra = videoID => {
       else {
         temp[pair[0]] = window.unescape(decodeURIComponent(pair[1]));
       }
-      if (pair[0] === 'title' || pair[0] === 'author') { //Issue #4, title problem
+      if (pair[0] === 'title' || pair[0] === 'author') { // Issue #4, title problem
         temp[pair[0]] = temp[pair[0]].replace(/\+/g, ' ');
       }
     }
@@ -190,26 +190,29 @@ youtube.getInfo = videoID => {
 youtube.decipher = (ccode, s = '') => {
   let sig = s.split('');
   function swap(arr, b) {
-    const aa = arr[b % arr.length];
-    const bb = arr[0];
-    arr[0] = aa;
-    arr[b] = bb;
+    var c = arr[0];
+    arr[0] = arr[b % arr.length];
+    arr[b % arr.length] = c;
     return arr;
   }
+
   ccode.forEach((c, i) => {
     if (typeof c !== 'string') {
       return;
     }
     switch (c) {
-      case 'r':
-        sig = sig.reverse();
-        break;
-      case 's':
-        sig = sig.slice(ccode[i + 1]);
-        break;
-      case 'w':
-        sig = swap(sig, ccode[i + 1]);
-        break;
+    case 'r':
+      sig.reverse();
+      break;
+    case 's':
+      sig = sig.slice(ccode[i + 1]);
+      break;
+    case 'p':
+      sig.splice(0, ccode[i + 1]);
+      break;
+    case 'w':
+      sig = swap(sig, ccode[i + 1]);
+      break;
     }
   });
   return sig.join('');
@@ -295,11 +298,11 @@ youtube.extractFormats = (info, ccode) => {
       }
       pairs.url = url;
       pairs.itag = itag;
-      if (pairs.sig) {
-        pairs.url += '&signature=' + pairs.sig;
-      }
       if (pairs.s) {
         pairs.url += '&s=' + pairs.s;
+      }
+      else if (pairs.sig) {
+        pairs.url += '&' + (pairs.sp || 'signature') + '=' + pairs.sig;
       }
 
       var format = youtube.formatDictionary(pairs);
@@ -309,7 +312,10 @@ youtube.extractFormats = (info, ccode) => {
       for (const j in format) {
         pairs[j] = format[j];
       }
-      objs.push(pairs);
+      // TO-DO; Lh0vuaCQgJc
+      if (!pairs.stream_type) {
+        objs.push(pairs);
+      }
     });
 
   if (!objs || !objs.length) {
@@ -325,7 +331,7 @@ youtube.extractFormats = (info, ccode) => {
 youtube.doCorrections = (info, ccode) => {
   // console.log('doCorrections');
   info.formats.forEach((o, i) => {
-    info.formats[i].url = o.url.replace(/&s=([^&]*)/, (a, s) => '&signature=' + youtube.decipher(ccode, s));
+    info.formats[i].url = o.url.replace(/&s=([^&]*)/, (a, s) => '&' + (o.sp || 'signature') + '=' + youtube.decipher(ccode, s));
   });
   return info;
 };
@@ -365,13 +371,13 @@ youtube.signatureLocal = info => {
       'function \\s*' + sigFunName +
       '\\s*\\([\\w$]*\\)\\s*{[\\w$]*=[\\w$]*\\.split\\(""\\);(.+);return [\\w$]*\\.join'
     );
-    const regCode2 = new RegExp(
-      sigFunName +
-      '\\s*\\=\\s*function\\([\\w\\$]*\\)\\s*\\{\\s*[\\w\\$]\\=[\\w\\$]*\\.split\\([^\\)]*\\)\\;(.+?)(?=return)'
-    );
     let functionCode = doMatch(content, regCode);
 
     if (functionCode === null) {
+      const regCode2 = new RegExp(
+        sigFunName +
+        '\\s*\\=\\s*function\\([\\w\\$]*\\)\\s*\\{\\s*[\\w\\$]\\=[\\w\\$]*\\.split\\([^\\)]*\\)\\;(.+?)(?=return)'
+      );
       functionCode = doMatch(content, regCode2);
       if (functionCode === null) {
         throw Error('signatureLocal: Cannot resolve signature;3');
@@ -382,9 +388,13 @@ youtube.signatureLocal = info => {
       content,
       /([\w$]*)\s*:\s*function\s*\(\s*[\w$]*\s*\)\s*{\s*(?:return\s*)?[\w$]*\.reverse\s*\(\s*\)\s*}/
     );
-    const slcFuncName = doMatch(
+    const sliceFuncName = doMatch(
       content,
-      /([\w$]*)\s*:\s*function\s*\(\s*[\w$]*\s*,\s*[\w$]*\s*\)\s*{\s*(?:return\s*)?[\w$]*\.(?:slice|splice)\(.+\)\s*}/
+      /([\w$]*)\s*:\s*function\s*\(\s*[\w$]*\s*,\s*[\w$]*\s*\)\s*{\s*(?:return\s*)?[\w$]*\.(?:slice)\(.+\)\s*}/
+    );
+    const spliceFuncName = doMatch(
+      content,
+      /([\w$]*)\s*:\s*function\s*\(\s*[\w$]*\s*,\s*[\w$]*\s*\)\s*{\s*(?:return\s*)?[\w$]*\.(?:splice)\(.+\)\s*}/
     );
     const regInline = new RegExp(
       '[\\w$]+\\[0\\]\\s*=\\s*[\\w$]+\\[([0-9]+)\\s*%\\s*[\\w$]+\\.length\\]'
@@ -396,10 +406,19 @@ youtube.signatureLocal = info => {
       funcPieces[i] = funcPieces[i].trim();
       const codeLine = funcPieces[i];
       if (codeLine.length > 0) {
-        if (codeLine.indexOf(slcFuncName) !== -1) { // slice
+        if (codeLine.indexOf(sliceFuncName) !== -1) { // slice
           const slice = /\d+/.exec(codeLine.split(',').pop()); // oE.s4(a,43) or oE["s4"](a,43) or oE['s4'](a,43)
           if (slice && slice.length) {
             decodeArray.push('s', slice[0]);
+          }
+          else {
+            throw Error('signatureLocal: Cannot resolve signature;4');
+          }
+        }
+        if (codeLine.indexOf(spliceFuncName) !== -1) { // splice
+          const splice = /\d+/.exec(codeLine.split(',').pop()); // oE.s4(a,43) or oE["s4"](a,43) or oE['s4'](a,43)
+          if (splice && splice.length) {
+            decodeArray.push('p', splice[0]);
           }
           else {
             throw Error('signatureLocal: Cannot resolve signature;4');
@@ -528,7 +547,7 @@ youtube.connrections = (info, pattern) => {
     }
     // OS file name limitations
     f.name = f.name
-    .replace(/[`~!@#$%^&*()_|+\-=?;:'",<>{}[\]\\/]/gi, '-');
+      .replace(/[`~!@#$%^&*()_|+\-=?;:'",<>{}[\]\\/]/gi, '-');
     return f;
   });
   return info;
@@ -540,11 +559,11 @@ youtube.perform = videoID => new Promise((resolve, reject) => {
     pattern: '[file_name].[extension]'
   }, prefs => {
     youtube.getInfo(videoID)
-    .then(info => youtube.extractFormats(info, prefs.ccode))
-    .then(info => youtube.verify(info, prefs))
-    .then(youtube.sort)
-    .then(info => youtube.connrections(info, prefs.pattern))
-    .then(resolve)
-    .catch(reject);
+      .then(info => youtube.extractFormats(info, prefs.ccode))
+      .then(info => youtube.verify(info, prefs))
+      .then(youtube.sort)
+      .then(info => youtube.connrections(info, prefs.pattern))
+      .then(resolve)
+      .catch(reject);
   });
 });

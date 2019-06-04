@@ -148,13 +148,7 @@ document.addEventListener('click', e => {
     });
   }
   else if (cmd === 'open-options') {
-    chrome.runtime.openOptionsPage(() => {
-      if (chrome.runtime.lastError) { // TO-DO: Remove this after FF 57 release
-        chrome.tabs.create({
-          url: '/data/options/index.html'
-        }, window.close);
-      }
-    });
+    chrome.runtime.openOptionsPage();
   }
   else if (cmd === 'open-youtube') {
     chrome.tabs.create({
@@ -162,7 +156,7 @@ document.addEventListener('click', e => {
     }, () => window.close());
   }
   else if (cmd === 'quick-download') {
-    let div = document.querySelector('[data-cmd="quick-download"]');
+    const div = document.querySelector('[data-cmd="quick-download"]');
     div.dataset.working = true;
     div.querySelector('span').textContent = locale.get('pp_7');
     quickDownload().then(

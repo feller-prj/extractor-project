@@ -1,18 +1,17 @@
 'use strict';
 
 /* close panel on reload */
-(function(callback) {
-  document.addEventListener('spfrequest', callback);
-  window.addEventListener('yt-navigate-start', callback);
-})(function() {
-  chrome.runtime.sendMessage({
+{
+  const close = () => chrome.runtime.sendMessage({
     method: 'close-panel'
   });
-});
+  document.addEventListener('spfrequest', close);
+  window.addEventListener('yt-navigate-start', close);
+}
 
 /* appeding button */
 function prepare(button, cname) {
-  button.dataset.tooltipText = 'Detect all possible download links';
+  button.title = 'Detect all possible download links';
   button.addEventListener('click', e => {
     e.preventDefault();
     e.stopPropagation();
@@ -25,33 +24,34 @@ function prepare(button, cname) {
 }
 
 // old UI
-(function(callback) {
-  document.addEventListener('DOMContentLoaded', callback);
-  document.addEventListener('spfdone', callback);
-})(function() {
-  const parent = document.getElementById('watch8-secondary-actions');
-  if (parent) {
-    // find class names; use a top level button
-    const button = parent.querySelector('#watch8-secondary-actions>button').cloneNode(true);
-    if (button) {
-      prepare(button, 'iaextractor-webx-button');
-      const span = button.querySelector('span');
-      if (span) {
-        span.textContent = 'Download';
-        parent.appendChild(button);
+{
+  const observe = () => {
+    const parent = document.getElementById('watch8-secondary-actions');
+    if (parent) {
+      // find class names; use a top level button
+      const button = parent.querySelector('#watch8-secondary-actions>button').cloneNode(true);
+      if (button) {
+        prepare(button, 'iaextractor-webx-button');
+        const span = button.querySelector('span');
+        if (span) {
+          span.textContent = 'Download';
+          parent.appendChild(button);
+        }
+        else {
+          console.error('Cannot find span element on the sample button element', button);
+        }
       }
       else {
-        console.error('Cannot find span element on the sample button element', button);
+        console.error('Cannot find a sample button in the parent element', parent);
       }
     }
-    else {
-      console.error('Cannot find a sample button in the parent element', parent);
-    }
-  }
-});
+  };
+  document.addEventListener('DOMContentLoaded', observe);
+  document.addEventListener('spfdone', observe);
+}
 // new UI
-(function() {
-  function observe() {
+{
+  const observe = () => {
     const top = document.querySelector('ytd-video-primary-info-renderer #top-level-buttons');
     if (top) {
       let button = top.querySelector('ytd-button-renderer');
@@ -63,11 +63,10 @@ function prepare(button, cname) {
           button.appendChild(a);
         }
         prepare(button, 'iaextractor-new-button');
-        //top.parentNode.appendChild(button);
         top.parentNode.insertBefore(button, [...top.parentNode.children].pop());
       }
       window.removeEventListener('yt-visibility-refresh', observe);
     }
-  }
+  };
   window.addEventListener('yt-visibility-refresh', observe);
-})();
+}

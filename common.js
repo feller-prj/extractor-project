@@ -1,29 +1,29 @@
 /* globals download, ffmpeg, locale */
 'use strict';
 
-function close (id) {
+function close(id, callback = () => {}) {
   chrome.tabs.executeScript(id, {
     'runAt': 'document_start',
     'code': `
       [...document.querySelectorAll('.iaextractor-webx-iframe')].forEach(p => p.parentNode.removeChild(p));
     `
-  });
+  }, callback);
 }
 
-function notify (request) {
+function notify(request) {
   chrome.storage.local.get({
     notification: true
   }, prefs => {
     if (prefs.notification) {
       let message = request.error || request.message || request;
       message = locale.get(message);
-      let optns = Object.assign({
+      const optns = Object.assign({
         type: 'basic',
         iconUrl: '/data/icons/48.png',
         title: locale.get('title'),
         message
       }, {
-        //requireInteraction: request.requireInteraction,
+        // requireInteraction: request.requireInteraction,
         isClickable: request.isClickable
       });
       chrome.notifications.create(optns);
@@ -36,13 +36,13 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
     notify(request);
   }
   else if (request.method === 'display-panel') {
-    let id = request.tabId || sender.tab.id;
+    const id = request.tabId || sender.tab.id;
     chrome.tabs.executeScript(id, {
       'runAt': 'document_start',
       'code': `!!document.querySelector('.iaextractor-webx-iframe')`
     }, rs => {
       const error = chrome.runtime.lastError;
-      let r = rs && rs[0];
+      const r = rs && rs[0];
       if (error) {
         notify(error);
       }
@@ -76,9 +76,9 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
     }, prefs => {
       download.get(request, prefs).then(
         ds => {
-          let vInfo = ds.filter(d => d.dash !== 'a').shift() || ds[0];
-          let aInfo = ds.filter(d => d !== vInfo).shift();
-          let root = prefs.savein || ffmpeg.parent(vInfo.filename);
+          const vInfo = ds.filter(d => d.dash !== 'a').shift() || ds[0];
+          const aInfo = ds.filter(d => d !== vInfo).shift();
+          const root = prefs.savein || ffmpeg.parent(vInfo.filename);
           let [leafname, extension] = ffmpeg.extract(vInfo.filename);
 
           // audio and video muxing
@@ -111,22 +111,22 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
           // extract audio
           else if (ds.length === 1 && vInfo.dash !== 'v' && prefs.toAudio && prefs.ffmpeg) {
             switch (extension) {
-              case 'weba':
-              case 'webm':
-              case 'ogg':
-              case 'vorbis':
-                extension = 'ogg';
-                break;
-              case 'opus':
-                break;
-              case 'aac':
-                break;
-              case 'mp4':
-              case 'm4a':
-                extension = 'm4a';
-                break;
-              default:
-                extension = 'mka'; // "MKA" container format can store a huge number of audio codecs.
+            case 'weba':
+            case 'webm':
+            case 'ogg':
+            case 'vorbis':
+              extension = 'ogg';
+              break;
+            case 'opus':
+              break;
+            case 'aac':
+              break;
+            case 'mp4':
+            case 'm4a':
+              extension = 'm4a';
+              break;
+            default:
+              extension = 'mka'; // "MKA" container format can store a huge number of audio codecs.
             }
             leafname = leafname.replace(' - DASH', '');
             ffmpeg.resolve(root, leafname, extension).then(output => {
@@ -160,7 +160,7 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
     req.onload = () => response({
       req
     });
-    req.onerror = (error) => response({
+    req.onerror = error => response({
       error
     });
     req.send();
@@ -168,26 +168,34 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
   }
   //
   if (request.method === 'close-panel') {
-    let id = request.tabId || sender.tab.id;
-    close(id);
+    const id = request.tabId || sender.tab.id;
+    close(id, response);
+    return true;
   }
 });
 
 // FAQs
-window.setTimeout(() => {
-  chrome.storage.local.get({
-    'version': null,
-    'faqs': true
-  }, prefs => {
-    let version = chrome.runtime.getManifest().version;
-
-    if (prefs.version ? (prefs.faqs && prefs.version !== version) : true) {
-      chrome.storage.local.set({version}, () => {
-        chrome.tabs.create({
-          url: chrome.runtime.getManifest().homepage_url + '?version=' + version +
-            '&type=' + (prefs.version ? ('upgrade&p=' + prefs.version) : 'install')
-        });
-      });
-    }
+{
+  const {onInstalled, getManifest} = chrome.runtime;
+  const {version} = getManifest();
+  const page = getManifest().homepage_url;
+  onInstalled.addListener(({reason, previousVersion}) => {
+    chrome.storage.local.get({
+      'faqs': true,
+      'last-update': 0
+    }, prefs => {
+      if (reason === 'install' || (prefs.faqs && reason === 'update')) {
+        const doUpdate = (Date.now() - prefs['last-update']) / 1000 / 60 / 60 / 24 > 45;
+        if (doUpdate && previousVersion !== version) {
+          chrome.tabs.create({
+            url: page + '?version=' + version +
+              (previousVersion ? '&p=' + previousVersion : '') +
+              '&type=' + reason,
+            active: reason === 'install'
+          });
+          chrome.storage.local.set({'last-update': Date.now()});
+        }
+      }
+    });
   });
-}, 3000);
+}
