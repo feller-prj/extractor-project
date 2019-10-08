@@ -1,9 +1,13 @@
 'use strict';
 
-if (typeof window.id === 'undefined') {
+if (typeof window.info === 'undefined') {
   const tmp = /v=([^=&]*)|embed\/([^=&]*)/.exec(location.href);
   if (tmp) {
-    window.id = tmp[1];
+    window.info = {
+      id: tmp[1],
+      title: document.title.replace(' - YouTube', ''),
+      author: ''
+    };
   }
 }
 
@@ -16,10 +20,14 @@ if (typeof window.id === 'undefined') {
     // add the new panel
     const d = detect();
     if (d) {
-      if (typeof window.id !== 'undefined') {
+      if (typeof window.info !== 'undefined') {
         const iframe = document.createElement('iframe');
         iframe.classList.add('iaextractor-webx-iframe');
-        iframe.src = chrome.runtime.getURL('/data/inject/panel/index.html?id=' + window.id);
+        iframe.src = chrome.runtime.getURL('/data/inject/panel/index.html' +
+          '?id=' + window.info.id +
+          '&author=' + encodeURIComponent(window.info.author) +
+          '&title=' + encodeURIComponent(window.info.title)
+        );
         d.player.appendChild(iframe);
       }
       else {

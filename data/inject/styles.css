@@ -1,9 +1,9 @@
 :root {
-  --iax-background: #FF6C09;
-  --iax-color: #FFF;
+  --iax-background: #ff6c09;
+  --iax-color: #fff;
 }
 
-.iaextractor-webx-button>span {
+.iaextractor-webx-button > span {
   color: var(--iax-background);
 }
 .iaextractor-webx-button::before {
@@ -11,8 +11,8 @@
   background-size: 16px 16px !important;
   background-position: 0 !important;
 }
-@-moz-document url-prefix() {
-  .iaextractor-webx-button:before {
+@supports (-moz-appearance:meterbar) {
+  .iaextractor-webx-button::before {
     background-image: url('moz-extension://__MSG_@@extension_id__/data/inject/download.svg') !important;
   }
 }
@@ -24,7 +24,10 @@
   cursor: pointer;
   min-width: 32px;
 }
-@-moz-document url-prefix() {
+.iaextractor-mobile {
+  background-size: 24px 24px !important;
+}
+@supports (-moz-appearance:meterbar) {
   .iaextractor-new-button {
     background-image: url('moz-extension://__MSG_@@extension_id__/data/inject/download.svg') !important;
   }
@@ -40,4 +43,15 @@
   width: 50%;
   height: 100%;
 }
-
+@media screen and (max-width: 600px) {
+  .iaextractor-webx-iframe {
+    left: 20%;
+    width: 80%;
+  }
+}
+@media screen and (max-width: 400px) {
+  .iaextractor-webx-iframe {
+    left: 0%;
+    width: 100%;
+  }
+}

@@ -1,11 +1,11 @@
 /* globals youtube */
 'use strict';
 
-var tItem = document.getElementById('template-item');
-var tPage = document.getElementById('template-page');
-var items = document.getElementById('items');
-var toolbar = document.getElementById('toolbar');
-var info;
+const tItem = document.getElementById('template-item');
+const tPage = document.getElementById('template-page');
+const items = document.getElementById('items');
+const toolbar = document.getElementById('toolbar');
+let info;
 
 function page() {
   toolbar.textContent = '';
@@ -36,7 +36,7 @@ function build(o) {
       '-',
       format.dash === 'v' ? 'video-only' : [
         format.audioEncoding.toUpperCase(),
-        format.audioBitrate + 'K',
+        format.audioBitrate + 'K'
       ]
     ]).join(' ');
     let item = document.importNode(tItem.content, true);

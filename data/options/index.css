@@ -1,6 +1,6 @@
 body {
   padding: 10px;
-  font-family: "Helvetica Neue",Helvetica,sans-serif;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 13px;
   min-width: 500px;
 }
@@ -20,7 +20,10 @@ fieldset {
 select {
   margin-left: 10px;
 }
-.commands td:last-child{
+.commands td:last-child {
   width: 10px;
   white-space: nowrap;
+}
+fieldset {
+  border: solid 1px #e8e8e8;
 }

@@ -15,7 +15,6 @@ ffmpeg.convert = function (command, args, dictionary) {
       command,
       arguments: args
     }, obj => {
-      console.error(obj);
       if (!obj || obj.error || (obj.code && obj.code !== 0)) {
         reject(new Error(obj ? obj.error || obj.stderr : 'error_12'));
       }

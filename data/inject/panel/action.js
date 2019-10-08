@@ -1,15 +1,20 @@
 /* globals youtube, build, items, info */
 'use strict';
 
-var id = document.location.search.split('id=').pop();
-youtube.perform(id).then(
+const args = new URLSearchParams(location.search);
+
+youtube.perform(
+  args.get('id'),
+  args.get('author'),
+  args.get('title')
+).then(
   info => build(info),
   e => {
-    console.error(e);
     document.body.dataset.loading = false;
     items.setAttribute('pack', 'center');
     items.setAttribute('align', 'center');
     items.textContent = e.message;
+    console.error(e);
   }
 );
 
@@ -30,6 +35,12 @@ document.addEventListener('click', e => {
       method: 'close-panel'
     });
   }
+  else if (cmd === 'mp3-converter') {
+    chrome.runtime.sendMessage({
+      method: 'open',
+      cmd
+    });
+  }
   // do not load audio or video files inside the iframe
   const a = e.target.closest('a');
   if (a) {
@@ -40,6 +51,7 @@ document.addEventListener('click', e => {
         itag: a.dataset.itag
       });
     }
+    e.stopPropagation();
     e.preventDefault();
   }
 });

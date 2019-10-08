@@ -37,6 +37,7 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
   }
   else if (request.method === 'display-panel') {
     const id = request.tabId || sender.tab.id;
+
     chrome.tabs.executeScript(id, {
       'runAt': 'document_start',
       'code': `!!document.querySelector('.iaextractor-webx-iframe')`
@@ -165,6 +166,13 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
     });
     req.send();
     return true;
+  }
+  else if (request.method === 'open') {
+    if (request.cmd === 'mp3-converter') {
+      chrome.tabs.create({
+        url: 'https://webbrowsertools.com/convert-to-mp3/'
+      });
+    }
   }
   //
   if (request.method === 'close-panel') {

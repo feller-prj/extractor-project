@@ -1,79 +1,102 @@
-/* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
+/* eslint camelcase: 0 */
 'use strict';
 
-var youtube = {};
+const youtube = window.youtube = {};
 
 /* Converting video tag to video codec information */
 youtube.formatDictionary = (function() {
   const KNOWN = {
-    5: ['flv', '240', 'mp3', 64, null],
-    6: ['flv', '270', 'mp3', 64, null],
-    13: ['3gp', 'N/A', 'aac', null, null],
-    17: ['3gp', '144', 'aac', 24, null],
-    18: ['mp4', '360', 'aac', 96, null],
-    22: ['mp4', '720', 'aac', 192, null],
-    34: ['flv', '360', 'aac', 128, null],
-    35: ['flv', '280', 'aac', 128, null],
-    36: ['3gp', '240', 'aac', 38, null],
-    37: ['mp4', '1080', 'aac', 192, null],
-    38: ['mp4', '3072', 'aac', 192, null],
-    43: ['webm', '360', 'ogg', 128, null],
-    44: ['webm', '480', 'ogg', 128, null],
-    45: ['webm', '720', 'ogg', 192, null],
-    46: ['webm', '1080', 'ogg', 192, null],
-    83: ['mp4', '240', 'aac', 96, null],
-    82: ['mp4', '360', 'aac', 96, null],
-    59: ['mp4', '480', 'aac', 128, null],
-    78: ['mp4', '480', 'aac', 128, null],
-    85: ['mp4', '520', 'aac', 152, null],
-    84: ['mp4', '720', 'aac', 192, null],
-    100: ['webm', '360', 'ogg', 128, null],
-    101: ['webm', '360', 'ogg', 192, null],
-    102: ['webm', '720', 'ogg', 192, null],
-    120: ['flv', '720', 'aac', 128, null],
-    139: ['m4a', '48', 'aac', 38, 'a'], // Audio-only
-    140: ['m4a', '128', 'aac', 128, 'a'], // Audio-only
-    141: ['m4a', '256', 'aac', 256, 'a'], // Audio-only
-    171: ['webm', '128', 'ogg', 128, 'a'], // Audio-only
-    172: ['webm', '256', 'ogg', 192, 'a'], // Audio-only
-    249: ['webm', '48', 'opus', 50, 'a'], // Audio-only
-    250: ['webm', '48', 'opus', 70, 'a'], // Audio-only
-    251: ['webm', '128', 'opus', 160, 'a'], // Audio-only
-    160: ['mp4', '144', null, null, 'v'], // Video-only
-    133: ['mp4', '240', null, null, 'v'], // Video-only
-    134: ['mp4', '360', null, null, 'v'], // Video-only
-    135: ['mp4', '480', null, null, 'v'], // Video-only
-    298: ['mp4', '720', null, null, 'v'], // Video-only (60fps)
-    136: ['mp4', '720', null, null, 'v'], // Video-only
-    299: ['mp4', '1080', null, null, 'v'], // Video-only (60fps)
-    137: ['mp4', '1080', null, null, 'v'], // Video-only
-    138: ['mp4', '2160', null, null, 'v'], // Video-only
-    266: ['mp4', '2160', null, null, 'v'], // Video-only
-    264: ['mp4', '1440', null, null, 'v'], // Video-only
-    278: ['webm', '144', null, null, 'v'], // Video-only
-    242: ['webm', '240', null, null, 'v'], // Video-only
-    243: ['webm', '360', null, null, 'v'], // Video-only
-    244: ['webm', '480', null, null, 'v'], // Video-only
-    245: ['webm', '480', null, null, 'v'], // Video-only
-    246: ['webm', '480', null, null, 'v'], // Video-only
-    302: ['webm', '720', null, null, 'v'], // Video-only (60fps)
-    247: ['webm', '720', null, null, 'v'], // Video-only
-    303: ['webm', '1080', null, null, 'v'], // Video-only (60fps)
-    248: ['webm', '1080', null, null, 'v'], // Video-only
-    313: ['webm', '2160', null, null, 'v'], // Video-only
-    272: ['webm', '2160', null, null, 'v'], // Video-only
-    271: ['webm', '1440', null, null, 'v'], // Video-only
-    308: ['webm', '1440', null, null, 'v'], // Video-only (60fps)
-    315: ['webm', '2160', null, null, 'v'] // Video-only (60fps)
+    '5': ['flv', '240', 'mp3', 64, null],
+    '6': ['flv', '270', 'mp3', 64, null],
+    '13': ['3gp', 'N/A', 'aac', null, null],
+    '17': ['3gp', '144', 'aac', 24, null],
+    '18': ['mp4', '360', 'aac', 96, null],
+    '22': ['mp4', '720', 'aac', 192, null],
+    '34': ['flv', '360', 'aac', 128, null],
+    '35': ['flv', '280', 'aac', 128, null],
+    '36': ['3gp', '240', 'aac', 38, null],
+    '37': ['mp4', '1080', 'aac', 192, null],
+    '38': ['mp4', '3072', 'aac', 192, null],
+    '43': ['webm', '360', 'ogg', 128, null],
+    '44': ['webm', '480', 'ogg', 128, null],
+    '45': ['webm', '720', 'ogg', 192, null],
+    '46': ['webm', '1080', 'ogg', 192, null],
+    '59': ['mp4', '480', 'aac', 128, null],
+    '78': ['mp4', '480', 'aac', 128, null],
+    '82': ['mp4', '360', 'aac', 96, null],
+    '83': ['mp4', '240', 'aac', 96, null],
+    '84': ['mp4', '720', 'aac', 192, null],
+    '85': ['mp4', '520', 'aac', 152, null],
+    '91': ['ts', '144', 'acc', 48, null],
+    '92': ['ts', '240', 'acc', 48, null],
+    '93': ['ts', '360', 'acc', 128, null],
+    '94': ['ts', '480', 'acc', 128, null],
+    '95': ['ts', '720', 'acc', 256, null],
+    '96': ['ts', '1080', 'acc', 256, null],
+    '100': ['webm', '360', 'ogg', 128, null],
+    '101': ['webm', '360', 'ogg', 192, null],
+    '102': ['webm', '720', 'ogg', 192, null],
+    '120': ['flv', '720', 'aac', 128, null],
+    '127': ['ts', '360', 'aac', 96, null],
+    '128': ['ts', '360', 'aac', 96, null],
+    '132': ['ts', '240', 'aac', 48, null],
+    '133': ['mp4', '240', null, null, 'v'],
+    '134': ['mp4', '360', null, null, 'v'],
+    '135': ['mp4', '480', null, null, 'v'],
+    '136': ['mp4', '720', null, null, 'v'],
+    '137': ['mp4', '1080', null, null, 'v'],
+    '138': ['mp4', '2160', null, null, 'v'],
+    '139': ['m4a', null, 'aac', 38, 'a'],
+    '140': ['m4a', null, 'aac', 128, 'a'],
+    '141': ['m4a', null, 'aac', 256, 'a'],
+    '151': ['ts', '720', 'acc', 24, null],
+    '160': ['mp4', '144', null, null, 'v'],
+    '171': ['webm', null, 'ogg', 128, 'a'],
+    '172': ['webm', null, 'ogg', 192, 'a'],
+    '242': ['webm', '240', null, null, 'v'],
+    '243': ['webm', '360', null, null, 'v'],
+    '244': ['webm', '480', null, null, 'v'],
+    '245': ['webm', '480', null, null, 'v'],
+    '246': ['webm', '480', null, null, 'v'],
+    '247': ['webm', '720', null, null, 'v'],
+    '248': ['webm', '1080', null, null, 'v'],
+    '249': ['webm', null, 'opus', 50, 'a'],
+    '250': ['webm', null, 'opus', 70, 'a'],
+    '251': ['webm', null, 'opus', 160, 'a'],
+    '264': ['mp4', '1440', null, null, 'v'],
+    '266': ['mp4', '2160', null, null, 'v'],
+    '271': ['webm', '1440', null, null, 'v'],
+    '272': ['webm', '2160', null, null, 'v'],
+    '278': ['webm', '144', null, null, 'v'],
+    '298': ['mp4', '720', null, null, 'v'],
+    '299': ['mp4', '1080', null, null, 'v'],
+    '302': ['webm', '720', null, null, 'v'],
+    '303': ['webm', '1080', null, null, 'v'],
+    '308': ['webm', '1440', null, null, 'v'],
+    '313': ['webm', '2160', null, null, 'v'],
+    '315': ['webm', '2160', null, null, 'v'],
+    '330': ['webm', '144', null, null, 'v'],
+    '331': ['webm', '240', null, null, 'v'],
+    '332': ['webm', '360', null, null, 'v'],
+    '333': ['webm', '240', null, null, 'v'],
+    '334': ['webm', '720', null, null, 'v'],
+    '335': ['webm', '1080', null, null, 'v'],
+    '336': ['webm', '1440', null, null, 'v'],
+    '337': ['webm', '2160', null, null, 'v'],
+    '394': ['mp4', '144', null, null, 'v'],
+    '395': ['mp4', '240', null, null, 'v'],
+    '396': ['mp4', '360', null, null, 'v'],
+    '397': ['mp4', '480', null, null, 'v'],
+    '398': ['mp4', '720', null, null, 'v']
   };
-  return function(obj) {
-    var itag = obj.itag;
+  return obj => {
+    const itag = obj.itag;
     if (!KNOWN[itag]) {
       return;
     }
     // get resolution from YouTube server
-    var res = obj.size ? /\d+x(\d+)/.exec(obj.size) : null;
-    var tmp = {
+    const res = obj.size ? /\d+x(\d+)/.exec(obj.size) : null;
+    const tmp = {
       container: KNOWN[itag][0],
       resolution: (res && res.length ? res[1] : KNOWN[itag][1]) + 'p',
       audioEncoding: KNOWN[itag][2],
@@ -94,7 +117,7 @@ youtube.fetch = (url, method = 'GET', raw = false) => new Promise((resolve, reje
   const req = new XMLHttpRequest();
   req.open(method, url);
   req.onload = () => resolve(raw ? req : req.response);
-  req.onerror = e => reject(e);
+  req.onerror = reject;
   req.send();
 });
 
@@ -131,13 +154,16 @@ youtube.getFormats = videoID => {
     const adaptive_fmts = /adaptive_fmts":\s*"([^"]*)/.exec(content);
     const dashmpd = /"dashmpd":\s*"([^"]+)"/.exec(content);
     const player = /"js":\s*"([^"]+)"/.exec(content);
-    const published_date = /datePublished.*content="([^"]+)/.exec(content);
+    const published_date =
+      /"dateText".*(\w{3}\s\d{1,2}[,.]\s*\d{4})"/.exec(content) ||
+      /"dateText".*(\d{1,2}\s\w{3}\s\d{4})"/.exec(content)
+      ;
     return {
       url_encoded_fmt_stream_map: url_encoded_fmt_stream_map && url_encoded_fmt_stream_map[1],
       adaptive_fmts: adaptive_fmts && adaptive_fmts[1],
       dashmpd: dashmpd && dashmpd[1] || '',
       player: player && player[1],
-      published_date: published_date && published_date[1]
+      published_date: published_date && published_date[1] || '-'
     };
   });
 };
@@ -145,18 +171,16 @@ youtube.getFormats = videoID => {
 youtube.getExtra = videoID => {
   // console.log('getExtra', videoID);
   function quary(str) {
-    var temp = {};
-    var vars = str.split('&');
-    for (var i = 0; i < vars.length; i++) {
-      var pair = vars[i].split('=');
+    const temp = {};
+    const vars = str.split('&');
+    for (let i = 0; i < vars.length; i++) {
+      const pair = vars[i].split('=');
       if (pair[0] === 'url_encoded_fmt_stream_map' || pair[0] === 'adaptive_fmts' || pair[0] === 'dashmpd') {
         temp[pair[0]] = window.unescape(pair[1]);
       }
-      else {
+      // we do not need these two anymore as we get them from player.getVideoData();
+      else if (pair[0] !== 'title' && pair[0] !== 'author') {
         temp[pair[0]] = window.unescape(decodeURIComponent(pair[1]));
-      }
-      if (pair[0] === 'title' || pair[0] === 'author') { // Issue #4, title problem
-        temp[pair[0]] = temp[pair[0]].replace(/\+/g, ' ');
       }
     }
     return temp;
@@ -173,7 +197,7 @@ youtube.getExtra = videoID => {
   });
 };
 
-youtube.getInfo = videoID => {
+youtube.getInfo = (videoID, author, title) => {
   // console.log('getInfo', videoID);
   return Promise.all([
     youtube.getFormats(videoID).catch(() => {}),
@@ -183,6 +207,10 @@ youtube.getInfo = videoID => {
     if (!obj.url_encoded_fmt_stream_map && !obj.adaptive_fmts) {
       throw Error('Cannot detect url_encoded_fmt_stream_map or adaptive_fmts');
     }
+    obj.author = author;
+    obj.title = title;
+    obj.vid = videoID;
+
     return obj;
   });
 };
@@ -190,7 +218,7 @@ youtube.getInfo = videoID => {
 youtube.decipher = (ccode, s = '') => {
   let sig = s.split('');
   function swap(arr, b) {
-    var c = arr[0];
+    const c = arr[0];
     arr[0] = arr[b % arr.length];
     arr[b % arr.length] = c;
     return arr;
@@ -305,13 +333,11 @@ youtube.extractFormats = (info, ccode) => {
         pairs.url += '&' + (pairs.sp || 'signature') + '=' + pairs.sig;
       }
 
-      var format = youtube.formatDictionary(pairs);
+      const format = youtube.formatDictionary(pairs);
       if (!format) {
         return;
       }
-      for (const j in format) {
-        pairs[j] = format[j];
-      }
+      Object.assign(pairs, format);
       // TO-DO; Lh0vuaCQgJc
       if (!pairs.stream_type) {
         objs.push(pairs);
@@ -460,7 +486,9 @@ youtube.signatureLocal = info => {
           ccode: decodeArray,
           player: info.player
         }, () => {
-          const url = youtube.doCorrections({formats: [{url: info.formats[0].url}]}, decodeArray).formats[0].url;
+          const url = youtube.doCorrections({
+            formats: [info.formats[0]]
+          }, decodeArray).formats[0].url;
           youtube.size(url).then(
             size => {
               if (size) {
@@ -531,19 +559,25 @@ youtube.connrections = (info, pattern) => {
   // dot is used to find extension
   info.title = info.title.replace(/\./g, '-');
   info.formats = info.formats.map(f => {
+    const extension = f.dash === 'a' ? f.audioEncoding : f.container;
     f.name = pattern
       .replace('[file_name]', info.title)
-      .replace('[extension]', f.dash === 'a' ? f.audioEncoding : f.container)
+      .replace('[extension]', extension)
       .replace('[author]', info.author)
       .replace('[author]', info.author)
-      .replace('[video_id]', info.video_id || info.vid)
+      .replace('[video_id]', info.vid || info.video_id)
       .replace('[video_resolution]', f.resolution)
       .replace('[audio_bitrate]', f.audioBitrate)
-      .replace('[published_date]', f.published_date);
+      .replace('[published_date]', info.published_date);
+
     // use DASH in title
     if (f.dash) {
-      const tmp = f.name.split('.');
-      f.name = tmp[0] + ' - DASH' + (tmp[1] ? '.' + tmp[1] : '');
+      if ('.' + extension) {
+        f.name = f.name.replace('.' + extension, '- DASH.' + extension);
+      }
+      else {
+        f.name += ' - DASH';
+      }
     }
     // OS file name limitations
     f.name = f.name
@@ -552,13 +586,13 @@ youtube.connrections = (info, pattern) => {
   });
   return info;
 };
-youtube.perform = videoID => new Promise((resolve, reject) => {
+youtube.perform = (videoID, author, title) => new Promise((resolve, reject) => {
   chrome.storage.local.get({
     ccode: ['r', 'r'],
     player: null,
     pattern: '[file_name].[extension]'
   }, prefs => {
-    youtube.getInfo(videoID)
+    youtube.getInfo(videoID, author, title)
       .then(info => youtube.extractFormats(info, prefs.ccode))
       .then(info => youtube.verify(info, prefs))
       .then(youtube.sort)

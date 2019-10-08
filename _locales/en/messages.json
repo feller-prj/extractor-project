@@ -6,7 +6,7 @@
     "message": "YouTube Video and Audio Downloader"
   },
   "opt_legend_1": {
-    "message": "FFmpeg Integration"
+    "message": "FFmpeg Integration (Desktop Only)"
   },
   "opt_legend_2": {
     "message": "Download Options"
@@ -96,10 +96,10 @@
     "message": "MP3 Conversion"
   },
   "opt_511": {
-    "message": "Allow extension to use desktop notifications"
+    "message": "Allow extension to issue desktop notifications"
   },
   "opt_512": {
-    "message": "Display FAQs page on updates"
+    "message": "Open FAQs page on updates"
   },
   "error_1": {
     "message": "Your OS is not yet supported"

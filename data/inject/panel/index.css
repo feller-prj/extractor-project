@@ -1,13 +1,14 @@
 :root {
-  --bg1: #FF6C09;
-  --bg2: #FFA05A;
-  --color: #FFF;
+  --bg1: #ff6c09;
+  --bg2: #ffa05a;
+  --color: #fff;
 }
-html,body {
+html,
+body {
   height: 100%;
 }
 body {
-  font-family: sans-serif,Roboto,arial;
+  font-family: sans-serif, Roboto, arial;
   font-size: 13px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -31,32 +32,52 @@ body[data-loading=true] {
   color: var(--color);
   width: calc(100vw - 76px);
 }
-.item>span:nth-child(2) {
+.item > span:nth-child(2) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   margin: 0 5px;
   text-align: left;
 }
-.item>span:first-child {
+.item > span:first-child {
   height: 16px;
   width: 16px;
   overflow: hidden;
-}
-.item>span:first-child>img{
-  transition: transform 200ms;
-}
-.item[data-toolbar=true]>span:first-child>img{
-  transform: translate(0, -16px);
 }
 .item img {
   min-width: 16px;
   min-height: 16px;
   pointer-events: none;
 }
-
+.item > span:first-child > img {
+  transition: transform 200ms;
+}
+.item[data-toolbar=true] > span:first-child > img {
+  transform: translate(0, -16px);
+}
 #titlebar {
-  min-height: 30px;
+  padding-left: 10px;
+}
+#titlebar span {
+  height: 20px;
+}
+#titlebar span[data-cmd] {
+  margin-left: 2px;
+  cursor: pointer;
+  padding: 0 10px;
+  background-color: var(--bg2);
+}
+#titlebar span[data-cmd="close-me"] {
+  width: 20px;
+  background-image: url('close.svg');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+}
+@media screen and (max-width: 300px) {
+  #titlebar span[data-cmd="mp3-converter"] {
+    display: none;
+  }
 }
 #content {
   overflow: hidden;
@@ -69,17 +90,6 @@ body[data-loading=true] {
 #toolbar {
   min-height: 32px;
   padding-top: 10px;
-}
-#close {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 20px;
-  width: 40px;
-  background: url('close.svg') center center no-repeat;
-  background-color: var(--bg2);
-  background-size: 16px;
-  cursor: pointer;
 }
 #toolbar input {
   display: none;

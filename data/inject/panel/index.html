@@ -3,6 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" href="index.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body vbox data-loading="true">
     <template id="template-item">
@@ -23,13 +24,14 @@
     </template>
 
     <div id="titlebar" hbox pack="center" align="center">
-      Download Links
+      <span hbox flex="1"></span>
+      <span hbox pack=center align=center hbox data-cmd="mp3-converter">MP3 Converter</span>
+      <span data-cmd="close-me"></span>
     </div>
     <div id="content" hbox>
       <div id="items" vbox flex="1"></div>
     </div>
     <div id="toolbar" hbox></div>
-    <div id="close" data-cmd="close-me"></div>
     <div id="externals" hbox align="center">
       Integration with external download managers is in progress!
     </div>

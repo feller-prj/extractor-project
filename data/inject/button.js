@@ -10,7 +10,7 @@
 }
 
 /* appeding button */
-function prepare(button, cname) {
+function prepare(button, ...cnames) {
   button.title = 'Detect all possible download links';
   button.addEventListener('click', e => {
     e.preventDefault();
@@ -19,54 +19,50 @@ function prepare(button, cname) {
       method: 'display-panel'
     });
   });
-  button.classList.add(cname);
+  button.classList.add(...cnames);
   button.classList.remove('yt-uix-clickcard-target', 'pause-resume-autoplay');
 }
 
-// old UI
-{
-  const observe = () => {
-    const parent = document.getElementById('watch8-secondary-actions');
-    if (parent) {
-      // find class names; use a top level button
-      const button = parent.querySelector('#watch8-secondary-actions>button').cloneNode(true);
-      if (button) {
-        prepare(button, 'iaextractor-webx-button');
-        const span = button.querySelector('span');
-        if (span) {
-          span.textContent = 'Download';
-          parent.appendChild(button);
-        }
-        else {
-          console.error('Cannot find span element on the sample button element', button);
-        }
-      }
-      else {
-        console.error('Cannot find a sample button in the parent element', parent);
-      }
-    }
-  };
-  document.addEventListener('DOMContentLoaded', observe);
-  document.addEventListener('spfdone', observe);
-}
 // new UI
 {
   const observe = () => {
     const top = document.querySelector('ytd-video-primary-info-renderer #top-level-buttons');
     if (top) {
-      let button = top.querySelector('ytd-button-renderer');
-      if (button) {
-        button = button.cloneNode(false);
-        let a = top.querySelector('ytd-button-renderer a');
-        if (a) {
-          a = a.cloneNode(true);
-          button.appendChild(a);
+      try {
+        const sample = top.querySelector('ytd-button-renderer');
+        if (sample) {
+          const parent = sample.parentElement;
+          const button = sample.cloneNode(false);
+          let a = top.querySelector('ytd-button-renderer a');
+          if (a) {
+            a = a.cloneNode(true);
+            button.appendChild(a);
+          }
+          prepare(button, 'iaextractor-new-button');
+          parent.insertBefore(button, parent.lastChild);
         }
-        prepare(button, 'iaextractor-new-button');
-        top.parentNode.insertBefore(button, [...top.parentNode.children].pop());
+      }
+      catch (e) {
+        console.error('error while inserting the button', e);
       }
       window.removeEventListener('yt-visibility-refresh', observe);
     }
   };
   window.addEventListener('yt-visibility-refresh', observe);
+}
+// mobile
+{
+  const observe = () => {
+    const top = document.querySelector('.slim-video-metadata-actions');
+    if (top) {
+      const sample = top.querySelector('c3-material-button');
+      if (sample) {
+        const parent = sample.parentElement;
+        const button = sample.cloneNode(false);
+        prepare(button, 'iaextractor-new-button', 'iaextractor-mobile');
+        parent.insertBefore(button, parent.lastChild);
+      }
+    }
+  };
+  window.addEventListener('state-navigateend', observe);
 }

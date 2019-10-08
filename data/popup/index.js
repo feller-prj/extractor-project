@@ -1,8 +1,8 @@
 /* globals youtube, locale */
 'use strict';
-var tab;
+let tab;
 
-var converter = {
+let converter = {
   firefox: {
     id: '{0ff128a1-c286-4e73-bffa-9ae879b244d5}',
     url: 'https://addons.mozilla.org/firefox/addon/media-conversion-tool/'
@@ -26,25 +26,25 @@ else {
   converter = converter.chrome;
 }
 
-function quickDownload () {
+function quickDownload() {
   return new Promise((resolve, reject) => {
     chrome.tabs.executeScript(tab.id, {
       allFrames: false,
-      code: `id`
-    }, ([id]) => {
-      if (id) {
+      code: `info`
+    }, ([info]) => {
+      if (info) {
         chrome.storage.local.get({
           doMerge: true,
           ffmpeg: ''
         }, prefs => {
-          youtube.perform(id).then(info => {
-            let format = document.querySelector('[name=format]:checked').id;
+          youtube.perform(info.id, info.author, info.title).then(info => {
+            const format = document.querySelector('[name=format]:checked').id;
             let formats = info.formats.filter(o => o.container === format)
               .filter(o => o.dash !== 'a')
               .filter(o => !o.dash || (prefs.ffmpeg && prefs.doMerge))
               .sort((a, b) => parseInt(b.resolution) - parseInt(a.resolution));
             if (formats.length) {
-              let quality = document.querySelector('[name=quality]:checked').id;
+              const quality = document.querySelector('[name=quality]:checked').id;
               if (quality === '1080p') {
                 formats = [
                   formats.filter(o => o.resolution === '1080p').shift(),
@@ -188,7 +188,7 @@ chrome.tabs.query({
   currentWindow: true
 }, ([t]) => {
   tab = t;
-  const isYouTube = tab.url && tab.url.indexOf('www.youtube.com') !== -1;
+  const isYouTube = tab.url && tab.url.indexOf('youtube.com/') !== -1;
   document.body.dataset.youtube = !!isYouTube;
   if (isYouTube) {
     document.querySelector('[data-cmd="open-youtube"]').dataset.cmd = 'quick-download';

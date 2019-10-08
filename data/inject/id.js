@@ -1,71 +1,83 @@
 'use strict';
 
-document.addEventListener('iaextractor', e => {
-  if (e.detail.id) {
-    // console.error('ID', e.detail);
-    window.id = e.detail.id;
-  }
-});
-
 // Finding id
-function findID() {
-  const url = document.location.href;
-  const tmp = /v=([^=&]*)|embed\/([^=&]*)/.exec(url);
-  if (tmp && tmp.length) {
-    document.dispatchEvent(new CustomEvent('iaextractor', {
-      detail: {
-        id: tmp[1]
-      }
-    }));
+const script = document.createElement('script');
+script.addEventListener('update', () => {
+  window.info = {
+    id: script.dataset.id,
+    title: script.dataset.title,
+    author: script.dataset.author
+  };
+  // console.log(window.info);
+});
+script.textContent = `
+  window.yttools = window.yttools || [];
+  function onYouTubePlayerReady(e) {
+    window.yttools.forEach(c => c(e));
   }
-  else {
-    const parent = document.documentElement;
-    parent.appendChild(
-      Object.assign(document.createElement('script'), {
-        textContent: `
-          var yttools = yttools || [];
-          yttools.push(function (e) {
-            document.dispatchEvent(new CustomEvent('iaextractor', {
-              detail: {
-                id: e.getVideoData()['video_id']
+
+  {
+    const script = document.currentScript;
+
+    // subsequent requests
+    const open = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url) {
+      if (url && url.endsWith('pbj=1') && url.indexOf('watch?v=') !== -1) {
+        this.addEventListener('load', () => {
+          try {
+            const o = JSON.parse(this.responseText);
+            if (Array.isArray(o)) {
+              for (const i of o) {
+                if (i.playerResponse && i.playerResponse.videoDetails) {
+                  script.dataset.id = i.playerResponse.videoDetails.videoId;
+                  script.dataset.title = i.playerResponse.videoDetails.title;
+                  script.dataset.author = i.playerResponse.videoDetails.author;
+
+                  script.dispatchEvent(new Event('update'));
+                }
               }
-            }));
-          });
-          function onYouTubePlayerReady (e) {
-            yttools.forEach(c => c(e));
+            }
+            else {
+              console.error('response is not an array');
+              script.dataset.id = script.player.getVideoData().video_id;
+              script.dispatchEvent(new Event('update'));
+            }
           }
+          catch(e) {
+            console.error('cannot fetch new info');
+            script.dataset.id = script.player.getVideoData().video_id;
+            script.dispatchEvent(new Event('update'));
+          }
+        });
+      }
+      return open.apply(this, arguments);
+    };
+    // initial page
+    window.yttools.push(e => {
+      const o = e.getVideoData();
+      script.dataset.id = o.video_id;
+      script.player = e;
+      if (o.title) {
+        script.dataset.author = o.author;
+        script.dataset.title = o.title;
+      }
+      else {
+        try {
+          script.dataset.author = ytplayer.config.args.author;
+          script.dataset.title = ytplayer.config.args.title;
+        }
+        catch (e) {}
+      }
+      script.dispatchEvent(new Event('update'));
+    });
 
-          (function (observe) {
-            observe(window, 'ytplayer', (ytplayer) => {
-              observe(ytplayer, 'config', (config) => {
-                if (config && config.args) {
-                  config.args.jsapicallback = 'onYouTubePlayerReady';
-                }
-              });
-            });
-          })(function (object, property, callback) {
-            let value;
-            let descriptor = Object.getOwnPropertyDescriptor(object, property);
-            Object.defineProperty(object, property, {
-              enumerable: true,
-              configurable: true,
-              get: () => value,
-              set: (v) => {
-                callback(v);
-                if (descriptor && descriptor.set) {
-                  descriptor.set(v);
-                }
-                value = v;
-                return value;
-              }
-            });
-          });
-        `
-      })
-    );
+    // https://youtube.github.io/spfjs/documentation/events/
+    window.addEventListener('spfready', () => {
+      if (typeof window.ytplayer === 'object' && window.ytplayer.config) {
+        window.ytplayer.config.args.jsapicallback = 'onYouTubePlayerReady';
+      }
+    });
   }
-}
-
-findID();
-document.addEventListener('spfdone', findID, false);
-window.addEventListener('yt-navigate-finish', findID, false);
+`;
+document.documentElement.appendChild(script);
+script.remove();
