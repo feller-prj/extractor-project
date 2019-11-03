@@ -570,10 +570,11 @@ youtube.connrections = (info, pattern) => {
       .replace('[audio_bitrate]', f.audioBitrate)
       .replace('[published_date]', info.published_date);
 
+    f.extension = extension;
     // use DASH in title
     if (f.dash) {
       if ('.' + extension) {
-        f.name = f.name.replace('.' + extension, '- DASH.' + extension);
+        f.name = f.name.replace('.' + extension, ' - DASH.' + extension);
       }
       else {
         f.name += ' - DASH';

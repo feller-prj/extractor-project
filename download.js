@@ -1,11 +1,13 @@
+/* globals browser */
 'use strict';
 
-var download = {};
+const download = {};
+window.download = download;
 
 download.tagInfo = (opusmixing = false) => {
   const audio = {
     m4a: [141, 140, 139],
-    get ogg () {
+    get ogg() {
       return opusmixing ? [172, 251, 171, 250, 249] : [172, 171]; // ogg or opus
     },
     opus: [251, 250, 249]
@@ -35,7 +37,7 @@ download.tagInfo = (opusmixing = false) => {
         ...video.webm.low,
         ...video.webm.medium,
         ...video.webm.high
-        ]
+      ]
     },
     audio,
     video
@@ -44,10 +46,10 @@ download.tagInfo = (opusmixing = false) => {
 
 // select a proper audio track
 download.guessAudio = (vInfo, info, pretendHD = false, opusmixing = false) => {
-  function sort (tmp, toArr) {
+  function sort(tmp, toArr) {
     return tmp.sort((a, b) => {
-      const i = toArr.indexOf(a.itag),
-          j = toArr.indexOf(b.itag);
+      const i = toArr.indexOf(a.itag);
+      const j = toArr.indexOf(b.itag);
       if (i === -1 && j === -1) {
         return 0;
       }
@@ -60,13 +62,13 @@ download.guessAudio = (vInfo, info, pretendHD = false, opusmixing = false) => {
       return i > j;
     });
   }
-  let tmp = info.formats.filter((a) => a.dash === 'a');
-  let tagInfo = download.tagInfo(opusmixing);
+  let tmp = info.formats.filter(a => a.dash === 'a');
+  const tagInfo = download.tagInfo(opusmixing);
   if (tmp && tmp.length) {
-    if (tagInfo.video.mp4.low.indexOf(vInfo.itag) !== -1 && !pretendHD) {  // Low quality (mp4)
+    if (tagInfo.video.mp4.low.indexOf(vInfo.itag) !== -1 && !pretendHD) { // Low quality (mp4)
       tmp = sort(tmp, [140, 171, 139, 172, 141]);
     }
-    else if (tagInfo.video.webm.low.indexOf(vInfo.itag) !== -1 && !pretendHD) {  // Low quality (webm)
+    else if (tagInfo.video.webm.low.indexOf(vInfo.itag) !== -1 && !pretendHD) { // Low quality (webm)
       tmp = sort(tmp, tagInfo.audio.ogg.reverse());
     }
     else if (tagInfo.video.mp4.medium.indexOf(vInfo.itag) !== -1 && !pretendHD) { // Medium quality (mp4)
@@ -80,10 +82,10 @@ download.guessAudio = (vInfo, info, pretendHD = false, opusmixing = false) => {
         ...tagInfo.video.webm.low,
         ...tagInfo.video.webm.medium,
         ...tagInfo.video.webm.high
-      ].indexOf(vInfo.itag) !== -1) { //High quality (webm)
+      ].indexOf(vInfo.itag) !== -1) { // High quality (webm)
         tmp = sort(tmp, tagInfo.audio.ogg);
       }
-      else {  //High quality (mp4)
+      else { // High quality (mp4)
         if (opusmixing) {
           // if opus is selected, make sure to use mkv container
           tmp = sort(tmp, [141, 172, 251, 140, 171, 250, 249, 139]);
@@ -99,15 +101,15 @@ download.guessAudio = (vInfo, info, pretendHD = false, opusmixing = false) => {
 };
 
 download.get = ({info, itag}, {doMerge, pretendHD, opusmixing, saveAs}) => {
-  let vInfo = info.formats.filter(f => f.itag === +itag).pop();
-  let ds = [vInfo];
+  const vInfo = info.formats.filter(f => f.itag === +itag).pop();
+  const ds = [vInfo];
   if (doMerge && vInfo.dash === 'v') {
-    let aInfo = download.guessAudio(vInfo, info, pretendHD, opusmixing);
+    const aInfo = download.guessAudio(vInfo, info, pretendHD, opusmixing);
     ds.push(aInfo);
   }
   let ids = [];
 
-  function search (id) {
+  function search(id) {
     return new Promise((resolve, reject) => {
       chrome.downloads.search({id}, ([d]) => {
         if (d) {
@@ -120,29 +122,30 @@ download.get = ({info, itag}, {doMerge, pretendHD, opusmixing, saveAs}) => {
     });
   }
 
-  function cancel (id) {
+  function cancel(id) {
     return new Promise(resolve => {
       chrome.downloads.cancel(id, resolve);
     });
   }
 
-  function dl (obj) {
+  function dl(obj) {
+    delete obj.mime; // this is the mime type that we need
     if (navigator.userAgent.indexOf('Firefox') === -1) {
       return new Promise((resolve, reject) => {
-        chrome.downloads.download(obj, (id) => {
-          let error = chrome.runtime.lastError;
+        chrome.downloads.download(obj, id => {
+          const error = chrome.runtime.lastError;
           return error ? reject(error) : resolve(id);
         });
       });
     }
     else {
       // in Firefox "chrome.downloads.download" does not return id!
-      return browser.downloads.download(obj); //jshint ignore:line
+      return browser.downloads.download(obj); // jshint ignore:line
     }
   }
 
   return new Promise((resolve, reject) => {
-    function observe (d) {
+    function observe(d) {
       if (!d.state || d.state.current === 'in_progress') {
         return;
       }
@@ -178,10 +181,12 @@ download.get = ({info, itag}, {doMerge, pretendHD, opusmixing, saveAs}) => {
       }
     }
     Promise.all(ds.map(o => {
+      const mime = (o.dash === 'a' ? 'audio' : 'video') + '/' + o.extension;
       return dl({
         url: o.url,
         saveAs,
-        filename: o.name
+        filename: o.name,
+        mime
       });
     })).then(os => {
       ids = os;

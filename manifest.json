@@ -3,11 +3,11 @@
   "short_name": "iaextractor",
   "description": "__MSG_appDesc__",
   "author": "Feller",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "manifest_version": 2,
   "default_locale": "en",
   "permissions": [
-    "tabs",
+    "activeTab",
     "storage",
     "nativeMessaging",
     "downloads",

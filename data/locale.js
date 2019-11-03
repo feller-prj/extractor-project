@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-var locale = {
-  get: (name) => chrome.i18n.getMessage(name) || name
+const locale = {
+  get(name) {
+    return chrome.i18n.getMessage(name.toString()) || name.toString();
+  }
 };
+window.locale = locale;

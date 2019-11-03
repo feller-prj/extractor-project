@@ -15,8 +15,7 @@ function notify(request) {
     notification: true
   }, prefs => {
     if (prefs.notification) {
-      let message = request.error || request.message || request;
-      message = locale.get(message);
+      const message = locale.get(request.error || request.message || request);
       const optns = Object.assign({
         type: 'basic',
         iconUrl: '/data/icons/48.png',
@@ -81,6 +80,7 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
           const aInfo = ds.filter(d => d !== vInfo).shift();
           const root = prefs.savein || ffmpeg.parent(vInfo.filename);
           let [leafname, extension] = ffmpeg.extract(vInfo.filename);
+          extension = vInfo.extension || extension;
 
           // audio and video muxing
           if (ds.length === 2 && prefs.doMerge && !prefs.ffmpeg) {

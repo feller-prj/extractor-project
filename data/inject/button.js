@@ -39,6 +39,7 @@ function prepare(button, ...cnames) {
             button.appendChild(a);
           }
           prepare(button, 'iaextractor-new-button');
+          button.textContent = '';
           parent.insertBefore(button, parent.lastChild);
         }
       }
