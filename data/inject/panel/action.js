@@ -21,6 +21,7 @@ youtube.perform(
 document.addEventListener('click', e => {
   const cmd = e.target.dataset.cmd;
   if (cmd === 'toggle-toolbar') {
+    e.preventDefault();
     const item = e.target.parentNode;
     [...items.querySelectorAll('a')]
       .filter(a => a !== item)
@@ -40,6 +41,39 @@ document.addEventListener('click', e => {
       method: 'open',
       cmd
     });
+  }
+  else if (cmd === 'download-with-tdm') {
+    const item = document.querySelector('.item[data-toolbar=true]');
+    if (item) {
+      let id = 'pabnknalmhfecdheflmcaehlepmhjlaa';
+      let link = 'https://chrome.google.com/webstore/detail/pabnknalmhfecdheflmcaehlepmhjlaa';
+      if (navigator.userAgent.indexOf('Firefox') !== -1) {
+        id = 'jid0-dsq67mf5kjjhiiju2dfb6kk8dfw@jetpack';
+        link = 'https://addons.mozilla.org/firefox/addon/turbo-download-manager/';
+      }
+      else if (navigator.userAgent.indexOf('OPR') !== -1) {
+        id = 'lejgoophpfnabjcnfbphcndcjfpinbfk';
+        link = 'https://addons.opera.com/extensions/details/turbo-download-manager/';
+      }
+      else if (navigator.userAgent.indexOf('Edg/') !== -1) {
+        id = 'mkgpbehnmcnadhklbcigfbehjfnpdblf';
+        link = 'https://microsoftedge.microsoft.com/addons/detail/mkgpbehnmcnadhklbcigfbehjfnpdblf';
+      }
+
+      chrome.runtime.sendMessage(id, {
+        method: 'add-jobs',
+        jobs: [{
+          link: item.href,
+          threads: 3
+        }]
+      }, resp => {
+        if (!resp) {
+          chrome.tabs.create({
+            url: link
+          });
+        }
+      });
+    }
   }
   // do not load audio or video files inside the iframe
   const a = e.target.closest('a');

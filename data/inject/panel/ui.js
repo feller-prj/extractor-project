@@ -31,11 +31,11 @@ function build(o) {
   document.body.dataset.loading = false;
   info.formats.forEach(format => {
     const textContent = [].concat.apply([], [
-      format.container.toUpperCase(),
+      (format.container || '').toUpperCase(),
       format.dash === 'a' ? 'audio-only' : format.resolution || format.quality,
       '-',
       format.dash === 'v' ? 'video-only' : [
-        format.audioEncoding.toUpperCase(),
+        (format.audioEncoding || '').toUpperCase(),
         format.audioBitrate + 'K'
       ]
     ]).join(' ');

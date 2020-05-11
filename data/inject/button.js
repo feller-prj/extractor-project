@@ -32,21 +32,18 @@ function prepare(button, ...cnames) {
         const sample = top.querySelector('ytd-button-renderer');
         if (sample) {
           const parent = sample.parentElement;
-          const button = sample.cloneNode(false);
-          let a = top.querySelector('ytd-button-renderer a');
-          if (a) {
-            a = a.cloneNode(true);
-            button.appendChild(a);
+          if (parent) {
+            if (parent.querySelector('.iaextractor-new-button') === null) {
+              const button = document.createElement('div');
+              prepare(button, 'iaextractor-new-button');
+              parent.insertBefore(button, parent.lastChild);
+            }
           }
-          prepare(button, 'iaextractor-new-button');
-          button.textContent = '';
-          parent.insertBefore(button, parent.lastChild);
         }
       }
       catch (e) {
         console.error('error while inserting the button', e);
       }
-      window.removeEventListener('yt-visibility-refresh', observe);
     }
   };
   window.addEventListener('yt-visibility-refresh', observe);

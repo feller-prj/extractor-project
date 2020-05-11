@@ -91,22 +91,78 @@ youtube.formatDictionary = (function() {
   };
   return obj => {
     const itag = obj.itag;
-    if (!KNOWN[itag]) {
-      return;
+    const IK = KNOWN[itag];
+    const dash = IK ? IK[4] : (obj.audioSampleRate || obj.audioQuality ? 'a' : 'v');
+
+    let container = '';
+    try {
+      container = (obj.mimeType || obj.type).split('/')[1].split(';')[0];
+    }
+    catch (e) {}
+    let codecs = '';
+    try {
+      codecs = dash === 'a' ? (obj.mimeType || obj.type).split('codecs="')[1].split('"')[0].split('.')[0] : null;
+    }
+    catch (e) {}
+    let audioBitrate = null;
+    if (IK) {
+      audioBitrate = IK[3];
+    }
+    else if (dash === 'a') {
+      if (obj.audioQuality === 'AUDIO_QUALITY_MEDIUM') {
+        audioBitrate = 160;
+      }
+      else if (obj.audioQuality === 'AUDIO_QUALITY_LOW') {
+        audioBitrate = 70;
+      }
+      else {
+        try {
+          audioBitrate = parseInt(obj.audioSampleRate / 1000);
+        }
+        catch (e) {}
+      }
     }
     // get resolution from YouTube server
     const res = obj.size ? /\d+x(\d+)/.exec(obj.size) : null;
+    let resolution = '';
+    if (IK) {
+      resolution = IK[1] + 'p';
+    }
+    else if (res && res.length) {
+      resolution = res[1] + 'p';
+    }
+    else if (obj.quality) {
+      if (obj.quality === 'medium') {
+        resolution = '360p';
+      }
+      else if (obj.quality === 'large') {
+        resolution = '480p';
+      }
+      else if (obj.quality === 'small') {
+        resolution = '240p';
+      }
+      else if (obj.quality === 'tiny') {
+        resolution = '144p';
+      }
+      else {
+        resolution = obj.quality.replace('hd', '') + 'p';
+      }
+    }
+    else if (obj.quality_label) {
+      resolution = obj.quality_label;
+    }
+
     const tmp = {
-      container: KNOWN[itag][0],
-      resolution: (res && res.length ? res[1] : KNOWN[itag][1]) + 'p',
-      audioEncoding: KNOWN[itag][2],
-      audioBitrate: KNOWN[itag][3],
-      dash: KNOWN[itag][4]
+      container: IK ? IK[0] : container,
+      resolution,
+      audioEncoding: IK ? IK[2] : codecs,
+      audioBitrate,
+      dash
     };
-    if (tmp.dash === 'a') {
+    if (dash === 'a') {
       tmp.quality = 'Audio-only';
     }
-    if (tmp.dash === 'v') {
+    if (dash === 'v') {
       tmp.quality = tmp.resolution + ' Video-only';
     }
     return tmp;
@@ -152,15 +208,18 @@ youtube.getFormats = videoID => {
   return youtube.fetch('https://www.youtube.com/watch?v=' + videoID).then(content => {
     const url_encoded_fmt_stream_map = /url_encoded_fmt_stream_map":\s*"([^"]*)/.exec(content);
     const adaptive_fmts = /adaptive_fmts":\s*"([^"]*)/.exec(content);
+    const adaptiveFormats = /\\"adaptiveFormats\\":([^\]]+\])/.exec(content);
+    const normalFormats = /\\"formats\\":([^\]]+\])/.exec(content);
     const dashmpd = /"dashmpd":\s*"([^"]+)"/.exec(content);
     const player = /"js":\s*"([^"]+)"/.exec(content);
     const published_date =
       /"dateText".*(\w{3}\s\d{1,2}[,.]\s*\d{4})"/.exec(content) ||
-      /"dateText".*(\d{1,2}\s\w{3}\s\d{4})"/.exec(content)
-      ;
+      /"dateText".*(\d{1,2}\s\w{3}\s\d{4})"/.exec(content);
     return {
       url_encoded_fmt_stream_map: url_encoded_fmt_stream_map && url_encoded_fmt_stream_map[1],
       adaptive_fmts: adaptive_fmts && adaptive_fmts[1],
+      normalFormats: normalFormats && normalFormats[1],
+      adaptiveFormats: adaptiveFormats && adaptiveFormats[1],
       dashmpd: dashmpd && dashmpd[1] || '',
       player: player && player[1],
       published_date: published_date && published_date[1] || '-'
@@ -204,8 +263,8 @@ youtube.getInfo = (videoID, author, title) => {
     youtube.getExtra(videoID).catch(() => {})
   ]).then(([frmts, extra]) => {
     const obj = Object.assign(frmts, extra);
-    if (!obj.url_encoded_fmt_stream_map && !obj.adaptive_fmts) {
-      throw Error('Cannot detect url_encoded_fmt_stream_map or adaptive_fmts');
+    if (!obj.url_encoded_fmt_stream_map && !obj.adaptive_fmts && !obj.adaptiveFormats) {
+      throw Error('Cannot detect url_encoded_fmt_stream_map, adaptive_fmts or adaptiveFormats');
     }
     obj.author = author;
     obj.title = title;
@@ -295,7 +354,8 @@ youtube.findOtherItags = (info, ccode) => {
 
 youtube.extractFormats = (info, ccode) => {
   // console.log('extractFormats');
-  const objs = [];
+  let objs = [];
+
   [info.url_encoded_fmt_stream_map, info.adaptive_fmts]
     .filter(a => a).join(',').split(',')
     .forEach(elem => {
@@ -315,34 +375,79 @@ youtube.extractFormats = (info, ccode) => {
           p[c[0]] = c[1];
           return p;
         }, {});
-      let url = pairs.url;
+
       const itag = parseInt(pairs.itag);
-      if (!url || !itag) {
+      if (!itag) {
         return;
       }
-
-      if (url.indexOf('ratebypass') === -1) {
-        url += '&ratebypass=yes';
-      }
-      pairs.url = url;
       pairs.itag = itag;
-      if (pairs.s) {
-        pairs.url += '&s=' + pairs.s;
-      }
-      else if (pairs.sig) {
-        pairs.url += '&' + (pairs.sp || 'signature') + '=' + pairs.sig;
-      }
 
-      const format = youtube.formatDictionary(pairs);
-      if (!format) {
-        return;
-      }
-      Object.assign(pairs, format);
       // TO-DO; Lh0vuaCQgJc
       if (!pairs.stream_type) {
         objs.push(pairs);
       }
     });
+  //
+  if (info.adaptiveFormats || info.normalFormats) {
+    const v = (info.normalFormats || '[]').replace(/\\(.)/g, (a, b) => b);
+    const w = (info.adaptiveFormats || '[]').replace(/\\(.)/g, (a, b) => b);
+    try {
+      const list = [...JSON.parse(v), ...JSON.parse(w)];
+      objs.push(...list.map(o => {
+        const a = (o.cipher || '').split('&').reduce((p, c) => {
+          const [k, v] = c.split('=');
+          p[k] = decodeURIComponent(window.unescape(window.unescape(v)));
+          return p;
+        }, {});
+        return Object.assign(o, a);
+      }));
+      for (const o of objs) {
+        if (o.signatureCipher) {
+          const args = new URLSearchParams(o.signatureCipher);
+          o.url = args.get('url') || '';
+          for (const [key, value] of args.entries()) {
+            if (key === 's' || key === 'sig' || key === 'sp') {
+              o[key] = value;
+            }
+            else if (key !== 'url') {
+              o.url += '&' + key + '=' + encodeURIComponent(value);
+            }
+          }
+        }
+      }
+
+      for (const o of objs) {
+        let url = o.url;
+        if (url.indexOf('ratebypass') === -1) {
+          url += '&ratebypass=yes';
+        }
+        o.url = url;
+
+        if (o.s) {
+          o.url += '&s=' + o.s;
+        }
+        else if (o.sig) {
+          o.url += '&' + (o.sp || 'signature') + '=' + o.sig;
+        }
+        const format = youtube.formatDictionary(o) || {};
+        Object.assign(o, format);
+      }
+    }
+    catch (e) {
+      console.error('error parsing adaptiveFormats', e);
+    }
+  }
+  // remove duplicates
+  const itags = [];
+  objs = objs.reverse().filter(o => {
+    if (itags.indexOf(o.itag) === -1) {
+      itags.push(o.itag);
+      return true;
+    }
+    // else {
+    //   console.log('duplicated itag', o.itag);
+    // }
+  });
 
   if (!objs || !objs.length) {
     throw Error('extractFormats: No link is found');
@@ -355,9 +460,10 @@ youtube.extractFormats = (info, ccode) => {
 };
 
 youtube.doCorrections = (info, ccode) => {
-  // console.log('doCorrections');
   info.formats.forEach((o, i) => {
-    info.formats[i].url = o.url.replace(/&s=([^&]*)/, (a, s) => '&' + (o.sp || 'signature') + '=' + youtube.decipher(ccode, s));
+    info.formats[i].url = o.url.replace(/&s=([^&]*)/, (a, s) => {
+      return '&' + (o.sp || 'signature') + '=' + youtube.decipher(ccode, s);
+    });
   });
   return info;
 };
@@ -382,12 +488,12 @@ youtube.signatureLocal = info => {
     content = content.replace(/\r?\n|\r/g, '');
 
     let sigFunName =
+      doMatch(content, /([^\s};]*)\s*=\s*function\s*\([^,]\)[^}]*\.split\(["']{2}\)[^}]*\.join\(['"]{2}\)/) ||
       doMatch(content, /\.set\s*\("signature"\s*,\s*([a-zA-Z0-9_$][\w$]*)\(/) ||
       doMatch(content, /\.sig\s*\|\|\s*([a-zA-Z0-9_$][\w$]*)\(/) ||
       doMatch(content, /\.signature\s*=\s*([a-zA-Z_$][\w$]*)\([a-zA-Z_$][\w$]*\)/) ||
       doMatch(content, /set\("signature",\s([a-zA-Z0-9_$][\w$]*)\(/) ||
-      doMatch(content, /signature.*\.set\([^,],\s*([a-zA-Z0-9_$]*)\(/) ||
-      doMatch(content, /([^\s};]*)\s*=\s*function\s*\([^,]\)[^}]*\.split\(["']{2}\)[^}]*\.join\(['"]{2}\)/);
+      doMatch(content, /signature.*\.set\([^,],\s*([a-zA-Z0-9_$]*)\(/);
 
     if (sigFunName === null) {
       throw Error('signatureLocal: Cannot resolve signature;2');
@@ -409,7 +515,6 @@ youtube.signatureLocal = info => {
         throw Error('signatureLocal: Cannot resolve signature;3');
       }
     }
-
     const revFunName = doMatch(
       content,
       /([\w$]*)\s*:\s*function\s*\(\s*[\w$]*\s*\)\s*{\s*(?:return\s*)?[\w$]*\.reverse\s*\(\s*\)\s*}/
@@ -581,8 +686,10 @@ youtube.connrections = (info, pattern) => {
       }
     }
     // OS file name limitations
-    f.name = f.name
-      .replace(/[`~!@#$%^&*()_|+\-=?;:'",<>{}[\]\\/]/gi, '-');
+    f.name = f.name.trim()
+      .replace(/[`~!@#$%^&*()_|+\-=?;:'",<>{}[\]\\/]/gi, '-')
+      .replace(/[\\/:*?"<>|]/g, '_').substring(0, 240);
+
     return f;
   });
   return info;

@@ -119,6 +119,9 @@ body[data-loading=true] {
 body[data-integration=true] #externals {
   transform: translate(0, 0);
 }
+#externals > span {
+  cursor: pointer;
+}
 
 [hbox] {
   display: flex;
